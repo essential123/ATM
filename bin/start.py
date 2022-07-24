@@ -1,14 +1,10 @@
-from core.src import main_body
-file_name = 'userinfo.txt'
 import os
+import sys
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(BASE_DIR)
+
 
 if __name__ == '__main__':
+    from core.src import run
 
-    if os.path.exists(file_name):
-        pass
-    else:
-        with open(file_name, 'a', encoding='utf-8') as f:
-            pass
-        # os.mknod(file_name)
-
-    main_body()
+    run()
