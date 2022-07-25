@@ -10,10 +10,13 @@ def check_admin(username):
     user_data = db_handler.select(username)
     if user_data['is_admin']:
         return True
+    return False
 
 
-def lock_user():
+def lock_user(all_user):
     username = input('请输入需要锁定的用户>>:').strip()
+    if username not in all_user:
+        return '用户不存在'
     user_data = db_handler.select(username)
     user_data['is_lock'] = True
     db_handler.save(user_data)
@@ -21,8 +24,10 @@ def lock_user():
     return f"{username}用户已被管理员锁定"
 
 
-def reset_pwd():
+def reset_pwd(all_user):
     username = input('请输入需要重置密码的用户>>:').strip()
+    if username not in all_user:
+        return '用户不存在'
     user_data = db_handler.select(username)
     password = input('请输入密码>>:').strip()
     confirm_password = input('请再次输入密码>>:').strip()
@@ -36,8 +41,10 @@ def reset_pwd():
     return f"管理员重置用户{username}密码"
 
 
-def clear_user():
+def clear_user(all_user):
     username = input('请输入您要清理的用户>>:').strip()
+    if username not in all_user:
+        return '用户不存在'
     user_db = settings.USER_DB_PATH
     user_path = os.path.join(user_db, username)
     os.remove(user_path)

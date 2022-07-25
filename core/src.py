@@ -2,6 +2,7 @@ from conf import settings
 from interface import user_interface, bank_interface, shop_interface
 from lib import common
 import re
+import os
 
 user_status = {
     'username': '',
@@ -177,10 +178,13 @@ def admin():
         for k, v in function_dict.items():
             print(k, v[0])
         choice = input('请输入功能编号(输入q退出)>>:').strip()
+        user_db_path = settings.USER_DB_PATH
+        all_user = os.listdir(user_db_path)
+        print(all_user)
         if choice == 'q':
             break
         elif choice in function_dict:
-            msg = function_dict[choice][1]()
+            msg = function_dict[choice][1](all_user)
             print(msg)
         else:
             print('编号超出范围，请重新输入')
