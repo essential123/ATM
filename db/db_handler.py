@@ -14,5 +14,5 @@ def select(username):
     file_list = os.listdir(settings.USER_DB_PATH)
     file_path = os.path.join(settings.USER_DB_PATH, username)
     if username in file_list:
-        with open(file_path,'r',encoding='utf8') as f:
+        with open(file_path, 'r', encoding='utf8') as f:
             return json.load(f)

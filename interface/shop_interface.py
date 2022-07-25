@@ -1,7 +1,9 @@
 from db import db_handler
 import json
 from lib import common
+
 logger = common.get_logger('购物车业务')
+
 
 def add_shopping_cards_interface(shop_car, file_path):
     with open(file_path, 'r', encoding='utf8') as f:

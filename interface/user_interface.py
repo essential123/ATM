@@ -2,6 +2,7 @@ import json
 from db import db_handler
 from core import src
 from lib import common
+
 logger = common.get_logger('用户业务')
 
 
@@ -40,7 +41,7 @@ def login_interface(username):
         if not password == user_data.get('password'):
             if count < 3:
                 print('密码输入错误,剩余输入机会%s次' % (3 - count))
-                count +=1
+                count += 1
                 continue
             elif count == 3:
                 user_data['is_lock'] = True
@@ -51,9 +52,3 @@ def login_interface(username):
             src.user_status['username'] = username
             logger.debug('%s登录成功' % username)
             return '%s登录成功' % username
-
-
-
-
-
-
