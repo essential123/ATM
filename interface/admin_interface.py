@@ -18,6 +18,7 @@ def lock_user():
     user_data['is_lock'] = True
     db_handler.save(user_data)
     logger.debug(f"{username}用户已被管理员锁定")
+    return f"{username}用户已被管理员锁定"
 
 
 def reset_pwd():
@@ -32,6 +33,7 @@ def reset_pwd():
     user_data['password'] = common.get_md5(password)
     db_handler.save(user_data)
     logger.debug(f"管理员重置用户{username}密码")
+    return f"管理员重置用户{username}密码"
 
 
 def clear_user():
@@ -40,3 +42,4 @@ def clear_user():
     user_path = os.path.join(user_db, username)
     os.remove(user_path)
     logger.debug(f"管理员删除了{username}用户")
+    return f"管理员删除了{username}用户"

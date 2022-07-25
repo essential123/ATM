@@ -12,7 +12,7 @@ def auth_user(func_name):
             res = func_name(*args, **kwargs)
             return res
         else:
-            print('用户未登录，请先登录')
+            print('您当前暂未登录,无法执行该功能,请先登录')
             src.login()
 
     return inner

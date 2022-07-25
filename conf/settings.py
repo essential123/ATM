@@ -1,4 +1,3 @@
-import logging
 import logging.config
 import os
 
@@ -8,25 +7,28 @@ USER_DB_PATH = os.path.join(DB_PATH, 'user_db')
 LOG_PATH = os.path.join(BASE_DIR, 'log')
 if not os.path.exists(USER_DB_PATH):
     os.mkdir(USER_DB_PATH)
+
+MONEY_RATE = 0.01
+
 # 定义日志输出格式 开始
-standard_format = '[%(asctime)s][%(threadName)s:%(thread)d][task_id:%(name)s][%(filename)s:%(lineno)d]' \
+STANDARD_FORMAT = '[%(asctime)s][%(threadName)s:%(thread)d][task_id:%(name)s][%(filename)s:%(lineno)d]' \
                   '[%(levelname)s][%(message)s]'  # 其中name为getlogger指定的名字
-simple_format = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d]%(message)s'
+SIMPLE_FORMAT = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d]%(message)s'
 
 # 自定义文件路径
 if not os.path.exists(LOG_PATH):
     os.mkdir(LOG_PATH)
-logfile_path = os.path.join(LOG_PATH, 'access.log')
+LOGFILE_PATH = os.path.join(LOG_PATH, 'log')
 # log配置字典
 LOGGING_DIC = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
-            'format': standard_format
+            'format': STANDARD_FORMAT
         },
         'simple': {
-            'format': simple_format
+            'format': SIMPLE_FORMAT
         },
     },
     'filters': {},  # 过滤日志
@@ -42,7 +44,7 @@ LOGGING_DIC = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',  # 保存到文件
             'formatter': 'standard',
-            'filename': logfile_path,  # 日志文件
+            'filename': LOGFILE_PATH,  # 日志文件
             'maxBytes': 1024 * 1024 * 5,  # 日志大小 5M
             'backupCount': 5,
             'encoding': 'utf-8',  # 日志文件的编码，再也不用担心中文log乱码了

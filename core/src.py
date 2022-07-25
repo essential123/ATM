@@ -1,8 +1,7 @@
-import os
-import json
 from conf import settings
 from interface import user_interface, bank_interface, shop_interface
 from lib import common
+import re
 
 user_status = {
     'username': '',
@@ -27,8 +26,8 @@ def register():
             if not password == confirm_password:
                 print('两次密码不一致')
                 return
-            res = user_interface.register_interface(username, password)
-            print(res)
+            flag, msg = user_interface.register_interface(username, password)
+            print(msg)
             break
 
 
@@ -42,51 +41,63 @@ def login():
                 if user_status['is_login']:
                     print('%s用户已登录' % username)
                     continue
-            res = user_interface.login_interface(username)
-            print(res)
+            flag, msg = user_interface.login_interface(username)
+            if flag:
+                user_status['is_login'] = True
+                user_status['username'] = username
+            print(msg)
             break
         else:
             print('输入不能为空')
 
 
-from lib import common
-
-
 @common.auth_user
 def check_balance():
-    balance = bank_interface.check_balance_interface(user_status['username'])
-    print('%s,您的余额为：%s' % (user_status['username'], balance))
+    flag, msg = bank_interface.check_balance_interface(user_status.get('username'))
+    print(msg)
 
 
 @common.auth_user
 def withdraw():
     money = input('请输入提现金额>>:').strip()
-    res = bank_interface.withdraw_interface(user_status['username'], money)
-    print(res)
+    if re.match('\d+(\.\d+)*', money):
+        flag, msg = bank_interface.withdraw_interface(user_status.get('username'), money)
+        print(msg)
+    else:
+        print('请输入正确的金额')
 
 
 @common.auth_user
 def recharge():
     money = input('请输入充值的金额>>:').strip()
-    res = bank_interface.recharge_interface(user_status['username'], money)
-    print(res)
+    if re.match('\d+(\.\d+)*', money):
+        flag, msg = bank_interface.recharge_interface(user_status.get('username'), money)
+        print(msg)
+    else:
+        print('请输入正确的金额')
 
 
 @common.auth_user
 def transfer():
     to_username = input('请输入收款人姓名>>:').strip()
     money = input('请输入转账的金额>>:').strip()
-    res = bank_interface.transfer_interface(user_status['username'], to_username, money)
-    print(res)
+    if re.match('\d+(\.\d+)*', money):
+        flag, msg = bank_interface.transfer_interface(user_status['username'], to_username, money)
+        print(msg)
+    else:
+        print('请输入正确的金额')
 
 
 @common.auth_user
 def check_bill():
-    res = bank_interface.check_flow_interface(user_status.get('username'))
-    print('-' * 40)
-    for i in res:
-        print(i)
-    print('-' * 40)
+    flag, msg = bank_interface.check_flow_interface(user_status.get('username'))
+    if not flag:
+        print(msg)
+    else:
+        print('-' * 40)
+        for i in msg:
+            print(i)
+        print('-' * 40)
 
 
 goods_list = [
@@ -110,36 +121,43 @@ def add_shopping_cards():
             print(f"商品编号:{i} , 商品名称：{j[0]} , 商品价格：{j[1]}")
         goods_choice = input('请输入你想要的商品编号(输入q退出)>>:').strip()
         if goods_choice == 'q':
+            flag, msg = shop_interface.add_shopping_cards_interface(shop_car, user_status.get('username'))
+            print(msg)
             break
+
         elif int(goods_choice) in range(len(goods_list)):
             goods = goods_list[int(goods_choice)][0]
             goods_count = input('请输入你想要的商品数量>>:').strip()
+            goods_count = int(goods_count)
             goods_price = goods_list[int(goods_choice)][1]
-            shop_car[goods] = [goods_count, goods_price]
-            file_path = os.path.join(settings.USER_DB_PATH, user_status['username'])
-            shop_interface.add_shopping_cards_interface(shop_car, file_path)
+            if not goods in shop_car:
+                shop_car[goods] = [goods_count, goods_price]
+            else:
+                shop_car[goods][0] += goods_count
         else:
             print('请输入正确的编号')
 
 
 @common.auth_user
 def check_shop_car():
-    shop_card_info = shop_interface.check_shop_car_interface(user_status['username'])
-    if not shop_card_info:
-        return
-    for item in shop_card_info.items():
-        print(f"商品名称:{item[0]}  |  商品数量:{item[1][0]}  |  商品单价:{item[1][1]}")
+    flag, msg = shop_interface.check_shop_car_interface(user_status.get('username'))
+    if flag:
+        for item in msg.items():
+            print(f"商品名称:{item[0]}  |  商品数量:{item[1][0]}  |  商品单价:{item[1][1]}")
+    else:
+        print(msg)
 
 
 @common.auth_user
 def Edit_Shopping_Cart():
-    username = user_status.get('username')
-    shop_interface.Edit_Shopping_Cart_interface(username)
+    flag, msg = shop_interface.Edit_Shopping_Cart_interface(user_status.get('username'))
+    print(msg)
 
 
 @common.auth_user
 def settlement_shopping_cards():
-    shop_interface.settlement_shopping_cards_interface(user_status['username'])
+    flag, msg = shop_interface.settlement_shopping_cards_interface(user_status.get('username'))
+    print(msg)
 
 
 @common.auth_user
@@ -162,7 +180,8 @@ def admin():
         if choice == 'q':
             break
         elif choice in function_dict:
-            function_dict[choice][1]()
+            msg = function_dict[choice][1]()
+            print(msg)
         else:
             print('编号超出范围，请重新输入')
 
