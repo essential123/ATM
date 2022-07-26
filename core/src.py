@@ -164,11 +164,10 @@ def settlement_shopping_cards():
 @common.auth_user
 def admin():
     from interface import admin_interface
-    flag = admin_interface.check_admin(user_status.get('username'))
+    flag, msg = admin_interface.check_admin(user_status.get('username'))
+    print(msg)
     if not flag:
-        print('你不是管理员')
         return
-    print('管理员%s登录成功' % user_status['username'])
     while True:
         function_dict = {
             '1': ['锁定用户账户', admin_interface.lock_user],
@@ -178,13 +177,13 @@ def admin():
         for k, v in function_dict.items():
             print(k, v[0])
         choice = input('请输入功能编号(输入q退出)>>:').strip()
-        user_db_path = settings.USER_DB_PATH
-        all_user = os.listdir(user_db_path)
-        print(all_user)
         if choice == 'q':
             break
         elif choice in function_dict:
-            msg = function_dict[choice][1](all_user)
+            user_db_path = settings.USER_DB_PATH
+            all_user = os.listdir(user_db_path)
+            print(all_user)
+            flag, msg = function_dict[choice][1](all_user)
             print(msg)
         else:
             print('编号超出范围，请重新输入')

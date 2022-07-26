@@ -64,4 +64,3 @@ LOGGING_DIC = {
         # },  # 当键不存在的情况下 (key设为空字符串)默认都会使用该k:v配置
     },
 }
-logging.config.dictConfig(LOGGING_DIC)
